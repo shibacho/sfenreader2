@@ -1,0 +1,260 @@
+<!DOCUMENT html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta content="クラウド将棋盤ジェネレーターは将棋局面図を作成するWebサービスです。" name="description" />
+<meta content="将棋 局面図 画像 ブログ 貼付け shogi" name="keywords"/>
+<title>クラウド将棋局面図ジェネレーター</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="./bod2sfen.js"></script>
+<script type="text/javascript" src="./google_analytics.js" async></script>
+<script type="text/javascript" src="https://apis.google.com/js/plusone.js">
+ {lang: 'ja'}
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#langselect').change(function(){
+    location.href = 'https://' + location.host + '/' + $('#langselect').val() + '/index.html';
+});
+});
+</script>
+<link rel="stylesheet" type="text/css" href="./common.css" />
+</head>
+<body>
+<div style="float:left;">
+<h1>クラウド将棋局面図ジェネレーター</h1>
+</div>
+<div style="float:right;">
+<!-- Twitter share button -->
+<a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-lang="ja">ツイート</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+<!-- hatena bookmark button -->
+<a class="twitter-follow-button" data-show-count="false" href="https://twitter.com/sfenreader_gae">@sfenreader_gaeをフォロー</a>
+<!-- Twitter follow button -->
+<a href="https://b.hatena.ne.jp/entry/https://sfenreader.appspot.com/" class="hatena-bookmark-button" data-hatena-bookmark-title="クラウド将棋盤ジェネレーター" data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+<!-- facebook button -->
+<div id="fb-root"></div><script src="https://connect.facebook.net/ja_JP/all.js#xfbml=1"></script><fb:like href="https://sfenreader.appspot.com/" send="false" layout="button_count" width="50" show_faces="false" font="arial"></fb:like>
+<!-- Google Plus one Button -->
+<g:plusone size="medium"></g:plusone>
+Language:<select id="langselect"><option value="ja" selected>日本語</option><option value="en">English</option></select>
+</div>
+<div id="abstract" style="margin-left:auto; margin-right:auto;">
+<div style="float:left; width:85%;">
+<h2>概要</h2>
+<p>
+<strong>クラウド将棋局面図ジェネレーター</strong>(旧称:将棋局面図WebAPI)はWeb上だけで完結する将棋盤局面図の画像作成ツールです。<br>
+開発者向けにWebAPIも公開しています。<br>
+<p>
+用途としては、<b>Twitterでの局面図のつぶやき</b>や、<br>
+ブログでの<b>課題局面</b>、<b>詰め将棋</b>の画像貼り付けを想定しています。<br>
+<p>
+従来は、<a href="https://home.att.ne.jp/lemon/ogi/SituationFigure.html">局面図</a>などのアプリを使用して画像を生成し、ブログのスペースに画像をアップロードしないと局面図の解説が出来ませんでした。<br>
+<p>
+このWebサービスではpng画像を直接返すため、imgタグで<strong style="color:#FF0000;">ブログに直接生成した画像を埋め込む</strong>ことが出来ます。<br>
+局面図を貼り付ける人の手間軽減になりますし、<strong style="color:#FF0000;">ブログのディスクスペースを消費することもありません。</strong> <br>
+<p>
+ただ<strong>フリーで無保証の提供になります</strong>ので、ご了承ください。<br>
+<p>
+<a href="https://twitter.com/#!/ginsho">ginsho</a>さんのGoogle Chrome拡張である<a href="https://chrome.google.com/webstore/detail/jelboncgkpobgplihidgchijjfkkkfjd">SFEN Reader</a>にインスパイアされて作りました。<br>
+</div>
+<div style="float:right; width:15%;">
+<script type="text/javascript" src="https://www.shogi.or.jp/schedule_bp/blogparts.js"></script>
+</div>
+</div> <!-- abstract -->
+<div id="description" style="width:100%; clear:both;">
+<hr>
+<h2>Web上で局面図を作成</h2>
+<ul>
+<li><a href="./ja/create_board.html">こちら</a>
+</ul>
+<hr>
+<h2>Kifu for Windowsから画像(とSFEN文字列)を生成</h2>
+<p>
+下のボックスにKifu for Windowsの[編集] -> [局面のコピー] -> [通常] でクリップボードにコピーされる盤面文字列を入力し、「変換する」を押してください。<br>
+画像のURLとブログに貼り付けるimgタグが生成され、プレビューが出来ます。<br>
+出てきたimgタグを使えば局面図を自分のブログに貼り付けることが出来ます。<br>
+<p>
+先手名、後手名以外に盤面の上に表示する「タイトル」も表示することが出来ます。<br>
+棋戦名や、「図は▲５二銀まで」のような局面図そのものの説明などを入力してください<br>
+注意点として、Unicodeの駒文字☗☖は使用出来ません。変わりに▲△(▽)をお使い下さい。<br>
+<p>
+SFEN文字列は<a href="https://kyokumen.jp/positions/search">局面ペディア検索</a>等でお使いください。<br>
+<hr>
+<p>
+<strong>Kifu for Windows の盤面を入力</strong><br>
+<textarea id="board" style="width:260px; height:230px; font-family:'ＭＳ ゴシック', 'MS Gothic', 'Osaka－等幅', Osaka-mono, monospace; font-size:14px; color:#999;">
+後手の持駒：なし
+  ９ ８ ７ ６ ５ ４ ３ ２ １
++---------------------------+
+|v香v桂v銀v金v玉v金v銀v桂v香|一
+| ・v飛 ・ ・ ・ ・ ・v角 ・|二
+|v歩v歩v歩v歩v歩v歩v歩v歩v歩|三
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|四
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|五
+| ・ ・ ・ ・ ・ ・ ・ ・ ・|六
+| 歩 歩 歩 歩 歩 歩 歩 歩 歩|七
+| ・ 角 ・ ・ ・ ・ ・ 飛 ・|八
+| 香 桂 銀 金 玉 金 銀 桂 香|九
++---------------------------+
+先手の持駒：なし
+手数＝0    まで
+</textarea><br>
+先手名: <input type="text" id="sente_name" style="width: 100px;" /> (※省略可)<br>
+後手名: <input type="text" id="gote_name" style="width: 100px;" /> (※省略可)<br>
+タイトル: <input type="text" id="shogi_title" style="width: 300px;" /> (※省略可 全角20文字以下)<br>
+<!-- 手数: <input type="text" id="shogi_title" style="width: 100px;" /> (※省略可)<br> -->
+強調表示: <input type="text" id="last_move" style="width:30px;"/> のマス (半角2文字 例:76 84 ※省略可)<br>
+<span id="turn_span">手番: <input type="radio" name="turn" value="b" checked>先手番</input> <input type="radio" name="turn" value="w">後手番</input></span> <input type="checkbox" id="turn_check" value="off"/>表示しない<br>
+駒の種類: <input type="radio" name="piece" value="kanji" checked />漢字一字駒 <input type="radio" name="piece" value="alphabet"/>英語一字駒(β) <input type="radio" name="piece" value="international"/>国際駒 <br>
+
+<button id="board_convert">変換する</button><span id="board_converted_text" class="none">変換完了</span>
+<div id="board_result" class="none">
+URL :<input type="text" id="long_url" style="width:400px;" onclick="this.focus(); this.select();"/> <button id="tweet">局面図をツイートする</button>(要:Twitterアカウント) <br> 
+<span id="versus_string" class="none">対</span> 
+<span id="board_default_name" class="none">局面図</span>
+<span id="twiimg_url" class="none"></span>
+<!--
+短縮URL:<input type="text" id="short_url" /><br>
+-->
+SFEN:<input type="text" id="sfen" style="width:400px;" onclick="this.focus(); this.select();"/> <button id="move_to_sfen">画像URLに移動</button> <br>
+ブログに貼り付ける:<br>
+<textarea id="blog_code" style="width:500px;height:100px;" onclick="this.focus(); this.select();"></textarea>
+<hr>
+<h3>プレビュー</h3>
+表示サイズの設定</h4>
+幅: <input type="text" id="sfen_img_width" /> 高さ: <input type="text" id="sfen_img_height" /> <input type="checkbox" id="keep_sfen_img_aspect" checked/> アスペクト比を保つ<br>
+<img src="about:_blank" id="sfen_preview">
+</div>
+<hr>
+<h2>APIを直接叩く使い方(開発者向け)</h2>
+<div id="developer_guide" class="none">
+<blockquote>
+https://sfenreader.appspot.com/sfen?sfen=<i>sfen_string</i>&lm=<i>last_move_square_num</i>&sname=<i>name_of_sente</i>&gname=<i>name_of_gote</i>&title=<i>title</i>&piece=<i>kanji_or_alphabet_or_international</i>&turn=<i>on_or_off</i>
+</blockquote>
+にアクセスすると<i>sfen_string</i>で示された局面がpng画像で返ってきます。<br>
+<i>sfen_string</i>は空白を含むのでURIencodeされている必要があります。<br>
+必須のパラメータです。<br>
+<p>
+またlmを2ケタの数字で指定すると、<i>last_move_square_num</i>が黄色で強調表示されます。<br>
+例えば&amp;lm=52 と書くと５二のマス目が黄色で強調表示されます。<br>
+これは最後に着手した手を示すのに使うことを想定しています。<br>
+lmは必須のパラメータではなく省略可能です。<br>
+<p>
+snameは先手、gnameは後手の名前です。UTF-8でURIencodeされている必要があります。<br>
+片方、または両方とも省略可能です。先手だけ、あるいは後手だけ名前を表示する、ということも出来ます。<br>
+<p>
+titleは棋戦名などを入れます。盤の中央上に出る文字列です。<br>
+sname、gname同様にUTF-8でURIencodeされている必要があります。<br>
+&amp;title=第52期王位戦第1局 のように使います。<br>
+<p>
+pieceは駒の種類を指定します。kanji を指定すると通常の一字駒に、alphabet を指定するとアルファベット一字駒に、internationalを指定すると国際駒になります。<br>
+省略すると、kanji を指定したのと同じことになります。<br>
+alphabet か international を指定すると将棋盤の段の数字がアラビア数字になり、手数を表す「～手目」の表示が「at ～」と英語表記になります。<br>
+<p>
+turn は先手番、後手番のマークを強調して手番を表示するかどうかを表します。<br>
+&amp;turn=on または &amp;turn=off で指定します。<br>
+省略するとonと同じ動作になります。<br>
+SFENに手番の情報が含まれていない場合は手番の強調を行いません。<br>
+<p>
+Twitterで呟いてインライン展開させたい場合は<i>/sfen</i> の代わりに<i>/twiimg</i> を指定します。以下のようなURLになります。<br>
+<blockquote>
+https://sfenreader.appspot.com/twiimg?sfen=<i>sfen_string</i>&lm=<i>last_move_square_num</i>&sname=<i>name_of_sente</i>&gname=<i>name_of_gote</i>&title=<i>title</i>&piece=<i>kanji_or_alphabet_or_international</i>&turn=<i>on_or_off</i>
+</blockquote>
+上のURLにアクセスするとTwitterカード向けにメタタグが埋め込まれたHTMLページが取得できます。<br>
+<!--
+<p>
+arrowは矢印の描画を行います。矢印の開始位置と終了位置をカンマ区切りで指定します。<br>
+先手の持駒から線を引く場合は00、後手の持駒から線を引く場合は01を指定します。<br>
+例: (77,76 ７七 から ７六に線を引く)
+例: (01,41 後手の持ち駒から41に線を引く)
+-->
+</div> <!-- developer_guide -->
+<button id="developer_guide_button">▼見る</button>
+<span id="developer_guide_show" class="none">▼見る</span><span id="developer_guide_hide" class="none">▲隠す</span>
+<hr>
+<h2 id="example_title">例</h2>
+<button id="example_button">▼例を見る</button><span id="example_button_to_show" class="none">▼例を見る</span><span id="example_button_to_hide" class="none">▲例を隠す</span>
+<div id="example" class="none">
+<h3>初期局面</h3>
+<img src="about:_blank" id="initial_board_img"><span id="initial_board_img_url" style="display:none;">./sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL</span>
+<h4>imgタグ</h4>
+<textarea style="width:500px;height:100px;">
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL"&gt;
+</textarea>
+<hr>
+<h3>伝説の▲５二銀</h3>
+<img id="endgame_board_img" src="about:_blank"><br><span id="endgame_board_img_url" class="none">./sfen?sfen=ln1g5%2F1r2S1k2%2Fp2pppn2%2F2ps2p2%2F1p7%2F2P6%2FPPSPPPPLP%2F2G2K1pr%2FLN4G1b%20w%20BGSLPnp%2061&lm=52&sname=%E7%BE%BD%E7%94%9F%E5%96%84%E6%B2%BB&gname=%E5%8A%A0%E8%97%A4%E4%B8%80%E4%BA%8C%E4%B8%89&title=%E7%AC%AC38%E5%9B%9E%20NHK%E6%9D%AF%20%E6%BA%96%E3%80%85%E6%B1%BA%E5%8B%9D</span>
+<h4>imgタグ</h4>
+<textarea style="width:600px;height:150px;">
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=ln1g5%2F1r2S1k2%2Fp2pppn2%2F2ps2p2%2F1p7%2F2P6%2FPPSPPPPLP%2F2G2K1pr%2FLN4G1b%20w%20BGSLPnp%2061&lm=52&sname=%E7%BE%BD%E7%94%9F%E5%96%84%E6%B2%BB&gname=%E5%8A%A0%E8%97%A4%E4%B8%80%E4%BA%8C%E4%B8%89&title=%E7%AC%AC38%E5%9B%9E%20NHK%E6%9D%AF%20%E6%BA%96%E3%80%85%E6%B1%BA%E5%8B%9D"&gt;
+</textarea>
+<hr>
+<h3>詰め将棋(将棋図巧 第1番)</h3>
+<img id="tsume_board_img" src="about:_blank"><span id="tsume_board_img_url" class="none">./sfen?sfen=1pG1B4%2FGs%2BP6%2FpP7%2Fn1ls5%2F3k5%2FnL4%2Br1b%2F1%2Bp1p%2BR4%2F1S7%2F2N6%20b%20SPgnl11p</span><br>
+<h4>imgタグ</h4>
+<textarea style="width:500px;height:100px;">
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=1pG1B4%2FGs%2BP6%2FpP7%2Fn1ls5%2F3k5%2FnL4%2Br1b%2F1%2Bp1p%2BR4%2F1S7%2F2N6%20b%20SPgnl11p%20"&gt;
+</textarea>
+<hr>
+<h3>詰め将棋(将棋図巧 第1番) 英語一字駒版</h3>
+<img id="tsume_board_img_alphabet" src="about:_blank"><span id="tsume_board_img_alphabet_url" class="none">./sfen?sfen=1pG1B4%2FGs%2BP6%2FpP7%2Fn1ls5%2F3k5%2FnL4%2Br1b%2F1%2Bp1p%2BR4%2F1S7%2F2N6%20b%20SPgnl11p&piece=alphabet</span><br>
+<h4>imgタグ</h4>
+<textarea style="width:500px;height:100px;">
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=1pG1B4%2FGs%2BP6%2FpP7%2Fn1ls5%2F3k5%2FnL4%2Br1b%2F1%2Bp1p%2BR4%2F1S7%2F2N6%20b%20SPgnl11p&piece=alphabet"&gt;
+</textarea>
+<br>
+<button id="example_button_under">▲例を隠す</button>
+</div> <!-- example -->
+<hr>
+<h2>リンク</h2>
+<ul>
+<li> <a href="https://www.geocities.jp/shogidokoro/usi.html">USIとSFENについてのページ </a>
+<li> <a href="https://github.com/shibacho/sfenreader_gae">ソース(github)</a> Apache2.0ライセンス
+</ul>
+<hr>
+<h2>要望、注意点等</h2>
+正常に局面が生成されないと思う方はURLかsfenの文字列を<a href="https://twitter.com/shibacho2">@shibacho2</a>宛に報告頂ければ幸いです。合わせてOSとブラウザ環境も教えて頂けると助かります。<br>
+<hr>
+<!-- <h2>Google App Engineの制約により出来ないこと</h2>
+<p>
+図面の任意のマスに矢印を引くこと(90度単位でしか画像を回転させられないため）<br>
+いい画像変換のWebAPIをご存知の方は<a href="https://www.twitter.com/#!/fantakeshi">@fantakeshi</a>までご連絡ください。<br>
+<a href="https://www.lightspun.com">LightSpun</a>、<a href="https://urlimg.com/">urlimg.com</a>などを検討しましたが、値段の面で断念しました。<br>
+<p>
+<a href="https://www.picnik.com">picnik</a>はもしかしたら出来るかもしれませんが詳しく調べていません。
+</p>
+<hr> -->
+<h2>謝辞</h2>
+<p>
+ponanza作者(兼bot作者)の<a href="https://twitter.com/#!/issei_y">@issei_y</a>さんと<a href="https://twitter.com/#!/ginsho">@ginshoさん</a>のやりとりがなければこのWebサービスの構想は産まれませんでした。ありがとうございます。<br>
+<p>
+Google App Engine 上で文字を画像に合成する方法を書いてくださった<a href="https://iizukak.com/?p=856">iizukakさん</a>に感謝します。<br>
+<p>
+<a href="https://81dojo.com">81dojo</a>に機能として組み込まれました。また、国際駒にグラフィックについて多くの尽力を頂きました。<br>
+<a href="https://twitter.com/#!/hidetchi">@HIDETCHI</a>さんありがとうございます。<br>
+<p>
+ブログでのご利用やTwitter、Webページでご紹介頂いている皆様に感謝します。<br>
+<hr>
+<h2>更新履歴</h2>
+<ul>
+<li> 2020/04/23 GAEの旧環境が非推奨になることに伴い、URL変更
+<li> 2015/07/21 ツイートした時Twitterでインライン変換されるようにした
+<li> 2015/07/13 ponanza局面評価機能を削除
+<li> 2011/09/22 Kifu for Windowsからの変換時に成銀が金と表示されるバグを修正
+<li> 2011/09/04 国際駒を新デザインにリニューアル(Thanks VERY much to <a href="https://hidetchi.blog68.fc2.com/">HIDETCHI</a>)
+<li> 2011/08/28 国際駒(by <a href="https://hidetchi.blog68.fc2.com/">HIDETCHI</a>)を暫定的に追加
+<li> 2011/08/06 Kifu for Windowsの局面図で出力される先手/後手の名前を解釈するようにした
+<li> 2011/08/06 SFEN文字列に含まれる手数を解釈し画像に含めるようにした
+<li> 2011/08/04 Web上で局面を作成するUIを暫定公開(使用ブラウザに制限あり)
+<li> 2011/07/20 「ponanza先生に聞く」ツイートボタンの設置、各種ガジェットの設置
+<li> 2011/07/18 SFENの手番強調表示機能を追加
+<li> 2011/07/17 サービス名変更、ソースの公開（Apache2.0 ライセンス）、英語一字駒の追加
+<li> 2011/07/13 対局者名、タイトルを入れるオプションの追加 (<a href="https://iizukak.com/?p=856">iizukakさんに感謝</a>)
+<li> 2011/07/12 先手後手のマークを▲から☗(Unicode5.2)へ 、持ち駒の数を漢数字からアラビア数字に、盤面に星を入れる
+<li> 2011/07/10 特定のマス目の強調機能(lmパラメータ)をつける
+<li> 2011/07/09 最初のリリース
+</ul>
+<hr>
+<img src="https://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+</div> <!-- description -->
+</body>
+</html>

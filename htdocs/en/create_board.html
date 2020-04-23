@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta content="A cloud shogi diagram generator is a service that create shogi board image on web." name="description" />
+<meta content="shogi kyokumen diagram image blog embed" name="keywords"/>
+<title>Create Shogi Diagram on the Web</title>
+<!--
+<script type="text/javascript">
+var user_agent = window.navigator.userAgent.toLowerCase();
+if (user_agent.indexOf('iphone') > -1 || user_agent.indexOf('android') > -1) {
+    location.href = 'create_board_mobile.html';
+}
+-->
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<!--Twitter Widget Setup -->
+<script>window.twttr = (function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0],
+    t = window.twttr || {};
+  if (d.getElementById(id)) return t;
+  js = d.createElement(s);
+  js.id = id;
+  js.src = "https://platform.twitter.com/widgets.js";
+  fjs.parentNode.insertBefore(js, fjs);
+ 
+  t._e = [];
+  t.ready = function(f) {
+    t._e.push(f);
+  };
+ 
+  return t;
+}(document, "script", "twitter-wjs"));</script>
+<script type="text/javascript" src="../jshogi_board.js?2015071201"></script>
+<script type="text/javascript" src="../create_board.js?2016090202"></script>
+<script type="text/javascript" src="../google_analytics.js" async></script>
+<link rel="stylesheet" type="text/css" href="../common.css" />
+</head>
+<body>
+<div id="container" class="container">
+<h1>Create Shogi Diagram on the Web</h1>
+<div class="right">
+Language:<select id="langselect"><option value="ja">日本語</option><option value="en" selected>English</option></select>
+</div>
+<div id="left_canvas" class="left">
+<div style="text-align:center;"><img src="../static_img/indicator.gif" id="indicator"></div>
+<canvas id="board" width="400" height="420"></canvas><br>
+<canvas id="rot_canvas" style="display:none;"></canvas>
+<div style="text-align:center;"><button id="flip">Flip</button></div><br>
+Initialize to handicapped games (or mate problem):
+<table>
+<tr>
+<td><button id="init_board">Normal</button></td>
+<td><button id="init_drop_kyo">Lance</button></td>
+<td><button id="init_drop_kaku">Bishop</button></td>
+<td><button id="init_drop_hisha">Rook</button></td>
+<td><button id="init_drop_hikyou">Lance and Rook</button></td>
+</tr>
+<tr>
+<td><button id="init_drop_nimai">Two pieces</button></td>
+<td><button id="init_drop_yonmai">Four pieces</button></td>
+<td><button id="init_drop_rokumai">Six pieces</button></td>
+<td><button id="init_mate_problem">Mate problem</button></td>
+<td><button id="init_by_sfen">Input SFEN</button></td>
+<span id="init_by_sfen_string" class="none">Input SFEN String</span>
+<span id="init_by_sfen_error_msg" class="none">The inputted SFEN string is invalid syntax.</span>
+</tr>
+</table>
+<br>
+URL&nbsp;:<input type="text" id="long_url" style="width:320px;" onclick="this.focus(); this.select();"/> <span id="twiimg_url" class="none"></span>
+<!--<a id="tweet" href="http://twitter.com/share">Tweet</a><br> <span id="versus_string" class="none">vs</span> <span id="board_default_name" class="none">Diagram</span>-->
+<span id="tweet"><a class="twitter-share-button" data-count="none">Tweet</a></span><br> <span id="versus_string" class="none">vs</span> <span id="board_default_name" class="none">diagram</span>
+<!--
+Shorten URL:<input type="text" id="short_url" /><br>
+-->
+SFEN:<input type="text" id="sfen" style="width:400px;" onclick="this.focus(); this.select();"/> <br>
+</div> <!-- left_canvas -->
+<div id="right_control" class="right">
+<p>
+Black Name: <input type="text" id="sente_name" style="width: 100px;" /> (*not required)<br>
+White Name: <input type="text" id="gote_name" style="width: 100px;" /> (*not required)<br>
+Title: <input type="text" id="shogi_title" style="width: 300px;" /> (*not required)<br>
+Last Move: <input type="text" id="last_move" style="width:30px;"/> Square (Example:76 84 *not required)<br>
+Move At: <input type="text" id="move_at" style="width:30px;"/> (*If blank, will not show on Diagram)<br>
+<span id="turn_span">Which to move: <input type="radio" name="turn" value="b" checked>Black</input> <input type="radio" name="turn" value="w">White</input></span> <input type="checkbox" id="turn_check" value="off"/>Do not display <br>
+</p>
+<p>
+<!--
+駒の種類: <input type="radio" name="piece" value="kanji" checked />漢字一字駒 <input type="radio" name="piece" value="alphabet"/>英語一字駒 <br>
+-->
+<strong class="underline">Paste on your blog:</strong><br>
+Paste the tag below on your blog contents.<br>
+<textarea id="blog_code" style="width:500px;height:100px;" onclick="this.focus(); this.select();"></textarea>
+</p>
+<p>
+<strong class="underline">Paste on BBS:</strong><br>
+Display a text diagram format same as Kifu for Windows.<br>
+<textarea id="board_text" style="width:260px;height:230px; font-family:'ＭＳ ゴシック', 'MS Gothic', 'Osaka－等幅', Osaka-mono, monospace; font-size:14px;" onclick="this.focus(); this.select();"></textarea><br>
+Or <a id="image_link" href="">Download Image</a></button>(Right click to save)
+</div> <!-- right control -->
+</div> <!-- container -->
+<!--
+<div id="sfen_preview" class="none">
+<h3>プレビュー</h3>
+幅: <input type="text" id="sfen_img_width" /> 高さ: <input type="text" id="sfen_img_height" /> <input type="checkbox" id="keep_sfen_img_aspect" checked/> アスペクト比を保つ<br>
+<img src="about:_blank" id="sfen_preview">
+</div> --> <!-- sfen_preview -->
+<div id="how_to_use" style="clear:both;">
+<hr>
+<h2>How to use</h2>
+Left Click: Select/move a piece. If any piece already exists at the destination square, swap pieces or capture the piece to the player.<br>
+Right Click: Change a piece type (Black piece -> Black promoted piece -> white piece ->white promoted piece)<br>
+<hr>
+<h2>System environment (Browser)</h2>
+IE9, Firefox(6,7), Google Chrome, Opera11, Safar5.1, (iPhone Safari) or higher<br>
+Your OS doesn't care.(maybe)<br>
+<hr>
+<h2>Feedback and bug report</h2>
+Please, mention to <a href="http://twitter.com/shibacho2">@shibacho2</a> on Twitter with your environment.
+<hr>
+<!--
+<h2>Technical background</h2>
+- Creator's blog's link later.
+<hr>
+-->
+<h2>History</h2>
+<ul>
+<li> 2015/07/12 Put language selector and some function updated.
+<li> 2011/09/04 English page is opened
+</ul>
+<hr>
+<div style="align:center;"><a href="./index.html">Back</a></div>
+</div>
+</body>

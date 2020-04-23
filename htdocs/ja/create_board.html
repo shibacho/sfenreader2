@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta content="クラウド将棋盤ジェネレーターは将棋局面図を作成するWebサービスです。" name="description" />
+<meta content="将棋 局面図 画像 ブログ 貼付け shogi" name="keywords"/>
+<title>将棋盤局面図を作成</title>
+<!--
+<script type="text/javascript">
+var user_agent = window.navigator.userAgent.toLowerCase();
+if (user_agent.indexOf('iphone') > -1 || user_agent.indexOf('android') > -1) {
+    location.href = 'create_board_mobile.html';
+}
+-->
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<!--Twitter Widget Setup -->
+<script>window.twttr = (function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0],
+    t = window.twttr || {};
+  if (d.getElementById(id)) return t;
+  js = d.createElement(s);
+  js.id = id;
+  js.src = "https://platform.twitter.com/widgets.js";
+  fjs.parentNode.insertBefore(js, fjs);
+ 
+  t._e = [];
+  t.ready = function(f) {
+    t._e.push(f);
+  };
+ 
+  return t;
+}(document, "script", "twitter-wjs"));</script>
+<script type="text/javascript" src="../jshogi_board.js?2015080201"></script>
+<script type="text/javascript" src="../create_board.js?2016090501"></script>
+<script type="text/javascript" src="../google_analytics.js" async></script>
+<link rel="stylesheet" type="text/css" href="../common.css" />
+</head>
+<body>
+<div id="container" class="container">
+<h1>局面図をWebで作成</h1>
+<div class="right">
+Language:<select id="langselect"><option value="ja" selected>日本語</option><option value="en">English</option></select>
+</div>
+<div id="left_canvas" class="left">
+<div style="text-align:center;"><img src="../static_img/indicator.gif" id="indicator"></div>
+<canvas id="board" width="400" height="420"></canvas><br>
+<canvas id="rot_canvas" style="display:none;"></canvas>
+<div style="text-align:center;"><button id="flip">上下反転</button></div><br>
+初期化: 
+<table>
+<tr>
+<td><button id="init_board">平手</button></td>
+<td><button id="init_drop_kyo">香落ち</button></td>
+<td><button id="init_drop_kaku">角落ち</button></td>
+<td><button id="init_drop_hisha">飛車落ち</button></td>
+<td><button id="init_drop_hikyou">飛香落ち</button></td>
+</tr>
+<tr>
+<td><button id="init_drop_nimai">二枚落ち</button></td>
+<td><button id="init_drop_yonmai">四枚落ち</button></td>
+<td><button id="init_drop_rokumai">六枚落ち</button></td>
+<td><button id="init_mate_problem">詰将棋用</button></td>
+<td><button id="init_by_sfen">任意のSFEN</button></td>
+<span id="init_by_sfen_string" class="none">SFEN文字列を入力してください</span>
+<span id="init_by_sfen_error_msg" class="none">SFEN文字列の文法が違います</span>
+</tr>
+</table>
+<br>
+URL&nbsp;:<input type="text" id="long_url" style="width:320px;" onclick="this.focus(); this.select();"/> <span id="twiimg_url" class="none"></span>
+<!--<a id="tweet" href="http://twitter.com/share">ツイート</a><br> <span id="versus_string" class="none">対</span> <span id="board_default_name" class="none">局面図</span>-->
+<span id="tweet"><a class="twitter-share-button" data-count="none">Tweet</a></span><br> <span id="versus_string" class="none">対</span> <span id="board_default_name" class="none">局面図</span>
+<!--
+短縮URL:<input type="text" id="short_url" /><br>
+-->
+SFEN:<input type="text" id="sfen" name="sfen" style="width:400px;" onclick="this.focus(); this.select();"/> <br>
+<div style="float:right;"><a href="http://kyokumen.jp/positions/search">局面ペディア検索</a>等に使えます</div>
+</form>
+</div> <!-- left_canvas -->
+<div id="right_control" class="right">
+<p>
+先手名: <input type="text" id="sente_name" style="width: 100px;" /> (※省略可)<br>
+後手名: <input type="text" id="gote_name" style="width: 100px;" /> (※省略可)<br>
+タイトル: <input type="text" id="shogi_title" style="width: 300px;" /> (※省略可)<br>
+強調表示: <input type="text" id="last_move" style="width:30px;"/> のマス (半角2文字 例:76 84 ※省略可)<br>
+何手目: <input type="text" id="move_at" style="width: 30px;"> (※省略時には表示しない)<br> 
+<span id="turn_span">手番: <input type="radio" name="turn" value="b" checked>先手番</input> <input type="radio" name="turn" value="w">後手番</input></span> <input type="checkbox" id="turn_check" value="off"/>表示しない <br>
+</p>
+<p>
+<!--
+駒の種類: <input type="radio" name="piece" value="kanji" checked />漢字一字駒 <input type="radio" name="piece" value="alphabet"/>英語一字駒 <br>
+-->
+<strong class="underline">ブログに貼り付けるコード:</strong><br>
+以下のタグをブログの本文内に貼り付けます。<br>
+<textarea id="blog_code" style="width:500px;height:100px;" onclick="this.focus(); this.select();"></textarea>
+</p>
+<p>
+<strong class="underline">掲示板に貼り付ける:</strong><br>
+Kifu for Windows で出力される局面図と同じフォーマットが表示されます。<br>
+<textarea id="board_text" style="width:260px;height:230px; font-family:'ＭＳ ゴシック', 'MS Gothic', 'Osaka－等幅', Osaka-mono, monospace; font-size:14px;" onclick="this.focus(); this.select();"></textarea><br>
+または <a id="image_link" href="">画像をダウンロード</a></button>(右クリックして保存)
+</p>
+</div> <!-- right control -->
+</div> <!-- container -->
+<!--
+<div id="sfen_preview" class="none">
+<h3>プレビュー</h3>
+幅: <input type="text" id="sfen_img_width" /> 高さ: <input type="text" id="sfen_img_height" /> <input type="checkbox" id="keep_sfen_img_aspect" checked/> アスペクト比を保つ<br>
+<img src="about:_blank" id="sfen_preview">
+</div> --> <!-- sfen_preview -->
+<div id="how_to_use" style="clear:both;">
+<hr>
+<h2>使い方</h2>
+左クリック: 駒を選択、移動。移動先のマスに駒がある場合は交換、または選択元の対局者の持ち駒にします。<br>
+右クリック: 駒の種類を変更(先手駒->先手成り駒->後手駒->後手成り駒)<br>
+<hr>
+<h2>動作環境(ブラウザ)</h2>
+IE9、Firefox(6、7)、Google Chrome、Opera11、Safar5.1、(iPhone Safari) で動作確認しております。<br>
+動作OSは選ばないはずです。<br>
+<hr>
+<h2>既知の問題点</h2>
+対応しているブラウザに制限があります。主にGoogle Chromeで動作確認しています。<br>
+Canvasを使っているので古いブラウザ(特にIE8以前)はあまり対応できないと思います。<br>
+他のブラウザについては連絡いただければ対応できるかもしれません。<br>
+<hr>
+<h2>既知の問題点以外のフィードバックやバグ報告</h2>
+<a href="http://twitter.com/shibacho2">@shibacho2</a>までお願いします。
+<hr>
+<!--
+<h2>技術的背景と解説</h2>
+- 作者のブログでどうぞ（予定）
+<hr>
+-->
+<!-- <h2>改善予定</h2>
+優先順位順ですが手順前後の可能性もあります。<br>
+<ul>
+<li>「初期局面に戻す」「詰将棋用配置」のショートカットボタンの設置
+<li>駒箱の概念の追加(駒落ち対応)
+<li>駒を移動した時の音の追加
+<li>リアルタイムプレビュー & 幅調整機能
+</ul>
+<hr> -->
+<!-- <h2>更新履歴</h2>
+更新履歴はGitHub参照
+<ul>
+<li>2015/07/12 ponanza先生に聞くを削除、対局者名プレビューをきちんと出来るように、更新履歴をコメントアウトする等
+<li>2011/09/11 getImageDataに<a href="http://fantakeshi.blog50.fc2.com/blog-entry-53.html">クロスドメインの問題がある</a>(＝汎用的棋譜ビューワーとして使いづらい)ため、drawImageを使った方法に修正
+<li><s>2011/08/26 Firefox7でも動くように内部的に大幅改修(drawImageではなくgetImageDataを使うようにした)</s>
+<li>2011/08/09 掲示板貼り付けフォーマットに先手、後手を含めるようにした。
+<li>2011/08/09 Firefox6、64bit版ブラウザに対応
+</ul>
+<hr> -->
+<div style="align:center;"><a href="../index.html">戻る</a></div>
+</div>
+</body>
