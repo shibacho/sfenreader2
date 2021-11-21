@@ -378,7 +378,7 @@ $(document).ready(function(){
     for (var i = 0, n = sfen_rows.length; i < n; i++) {
       // Add board rows flipped order
       // Reverse string of flipped order
-      var reversed_line = sfen_rows[n - i - 1].split("").reverse().join("");
+      var reversed_line = Array.from(sfen_rows[n - i - 1].matchAll(/(\+?.)/g), m => m[0]).reverse().join('');
       new_sfen_board_array.push(flip_alphabet(reversed_line));
     }
     var new_sfen_array = new Array(4);
