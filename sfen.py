@@ -831,6 +831,8 @@ class SfenHandler():
             img.save(out, format="PNG")
             response = make_response(out.getvalue())
         response.headers['Content-Type'] = 'image/png'
+        ### 同じクエリなら同じ画像なので、ブラウザや X のクローラーにキャッシュさせる
+        response.headers['Cache-Control'] = 'public, max-age=86400'
         return response
 
 def sfen_handler():

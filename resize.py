@@ -28,6 +28,7 @@ from sfen import sfen_handler
 class ResizeHandler():
     WIDTH = 842
     HEIGHT = 421
+    CACHE_SECONDS = 86400
     logger = ""
     def __init__(self):
         self.logger = logging.getLogger('werkzeug')
@@ -52,13 +53,22 @@ class ResizeHandler():
             return sfen_response
 
         diagram_img = Image.open(io.BytesIO(sfen_response.get_data()))
+        ### 対局者名やタイトルで高さが 421px を超える場合は、切れないよう縮小する
+        if diagram_img.height > self.HEIGHT:
+            scale = self.HEIGHT / diagram_img.height
+            diagram_img = diagram_img.resize(
+                (round(diagram_img.width * scale), self.HEIGHT),
+                Image.Resampling.LANCZOS)
         x = (self.WIDTH - diagram_img.width) // 2
-        img.paste(diagram_img, (x, 0))
+        y = (self.HEIGHT - diagram_img.height) // 2
+        img.paste(diagram_img, (x, y))
 
         with io.BytesIO() as out:
-            img.save(out, format='PNG')
+            ### X での互換性のため透過なしの RGB で出力する
+            img.convert('RGB').save(out, format='PNG', optimize=True)
             response = make_response(out.getvalue())
         response.headers['Content-Type'] = 'image/png'
+        response.headers['Cache-Control'] = f'public, max-age={self.CACHE_SECONDS}'
         return response
 
 def resize_handler():
