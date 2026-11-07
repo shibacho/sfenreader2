@@ -1,0 +1,15 @@
+# sfenreader2.appspot.com へのアクセスを Cloud Run へ中継する App Engine アプリ
+# (リダイレクトだとブラウザのURLが *.run.app に変わってしまうため、中継して返す)
+runtime: python312
+entrypoint: gunicorn -b :$PORT --worker-class gthread --threads 8 --timeout 60 main:app
+instance_class: F1
+automatic_scaling:
+  max_instances: 2
+
+env_variables:
+  UPSTREAM_URL: "https://sfenreader2-226232565265.asia-northeast1.run.app"
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
