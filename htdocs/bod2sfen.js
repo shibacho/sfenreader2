@@ -14,6 +14,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// 共有用URLの基点。本番 (appspot / Cloud Run) では正式URLに統一し、
+// ローカル実行時は表示中のホストを使う
+var SFENREADER_PUBLIC_URL = 'https://sfenreader2.appspot.com';
+function PublicBaseUrl() {
+  if (/(\.appspot\.com|\.run\.app)$/.test(location.hostname)) {
+    return SFENREADER_PUBLIC_URL;
+  }
+  return location.protocol + '//' + location.host;
+}
+
 String.prototype.toArray = function() {
     var array = new Array;
     for (var i=0 ; i < this.length; i++) {
@@ -408,8 +418,8 @@ function UpdateUrl() {
     }
     query += '&piece=' + $('input[name=piece]:checked').val() ;
     
-    URL = location.protocol + "//" + location.host + "/sfen?" + query;
-    TWITTER_URL = location.protocol + "//" + location.host + "/twiimg?" + query; 
+    URL = PublicBaseUrl() + "/sfen?" + query;
+    TWITTER_URL = PublicBaseUrl() + "/twiimg?" + query; 
 }
 
 var SFEN_IMAGE = undefined;

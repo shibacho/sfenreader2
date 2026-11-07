@@ -1,6 +1,8 @@
 FROM python:3.12-slim
 
 ENV PYTHONUNBUFFERED=1
+# /twiimg が生成する共有用URLの基点 (ローカルで試すときは空にする)
+ENV PUBLIC_BASE_URL=https://sfenreader2.appspot.com
 
 # 対局者名・タイトルなどの日本語文字列描画用フォント
 # (Pillow は manylinux wheel で入るのでビルドツールは不要)

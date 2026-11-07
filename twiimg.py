@@ -18,6 +18,7 @@
 
 import urllib.parse
 import logging
+import os
 import re
 from html import escape
 from time import time
@@ -31,7 +32,11 @@ class TwiimgHandler():
     def get(self):
         ### クエリ文字列を含まない URL からディレクトリ部分を取り出す
         ### (request.url はクエリ内の %2F もデコードされるため使わない)
-        path = request.base_url.rsplit('/', 1)[0]
+        ### 環境変数 PUBLIC_BASE_URL があれば共有用URLの基点として使う
+        ### (Cloud Run のURLではなく https://sfenreader2.appspot.com に統一するため)
+        path = os.environ.get('PUBLIC_BASE_URL', '').rstrip('/')
+        if path == '':
+            path = request.base_url.rsplit('/', 1)[0]
         
         sfen_raw = request.args.get('sfen', default='')
         sfen = urllib.parse.unquote(sfen_raw)
