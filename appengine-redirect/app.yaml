@@ -1,0 +1,16 @@
+# sfenreader2.appspot.com へのアクセスを Cloud Run へリダイレクトするだけの App Engine アプリ
+runtime: python312
+entrypoint: gunicorn -b :$PORT main:app
+instance_class: F1
+automatic_scaling:
+  max_instances: 1
+
+env_variables:
+  REDIRECT_TO: "https://sfenreader2-226232565265.asia-northeast1.run.app"
+  # 302 (一時) / 301 (恒久)。301 はブラウザに長くキャッシュされるので、移行が落ち着いてから切り替える
+  REDIRECT_STATUS: "302"
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
