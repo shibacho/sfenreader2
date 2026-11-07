@@ -6,29 +6,32 @@
 
 This service generates a PNG image of a shogi position from a URL containing an SFEN string.
 
-It is running at https://sfenreader2.appspot.com/ .
+It is running at https://sfenreader2.appspot.com/ . The old URL https://sfenreader.appspot.com/ works the same way.
 
 ## Architecture
 
 ```
 Browser / SNS
-   │  https://sfenreader2.appspot.com/
-   ▼
-App Engine (appengine-proxy/)      … receives the public URL and proxies to Cloud Run
-   │
-   ▼
+   │  https://sfenreader2.appspot.com/      https://sfenreader.appspot.com/ (old URL)
+   ▼                                        ▼
+App Engine: project sfenreader2         App Engine: project sfenreader
+   (appengine-proxy/)                       (same appengine-proxy/ deployed)
+   │                                        │
+   └──────────────┬─────────────────────────┘   … receive the public URLs and proxy to Cloud Run
+                  ▼
 Cloud Run (repository root)        … main application (Flask + Pillow, container)
 ```
 
 | Component | Location | Role |
 |---|---|---|
 | Cloud Run `sfenreader2` (asia-northeast1) | repository root (`Dockerfile`, `main.py`, ...) | Generates diagrams (`/sfen`, `/resize`, `/twiimg`) and serves static pages (`htdocs/`) |
-| App Engine `default` service | `appengine-proxy/` | Proxies requests for `sfenreader2.appspot.com` to Cloud Run, keeping the appspot URL in the browser |
+| App Engine `default` service (project `sfenreader2`) | `appengine-proxy/` | Proxies requests for `sfenreader2.appspot.com` to Cloud Run, keeping the appspot URL in the browser |
+| App Engine `default` service (project `sfenreader`) | `appengine-proxy/` | Proxies requests for the old URL `sfenreader.appspot.com` to the same Cloud Run |
 
 - Player names and titles are rendered with the Noto Sans CJK font in the container
   (the Google Charts Image API used formerly has been shut down).
 - Share URLs (output of `/twiimg`, links on the board editor page) use
-  `https://sfenreader2.appspot.com`.
+  `https://sfenreader2.appspot.com` (also when accessed via the old URL).
 
 ## Deploy
 
@@ -41,7 +44,10 @@ gcloud run deploy sfenreader2 --source . --project sfenreader2 --region asia-nor
 ### Proxy (App Engine)
 
 ```sh
+# sfenreader2.appspot.com
 gcloud app deploy appengine-proxy/app.yaml --project sfenreader2 --version proxy-to-cloudrun
+# sfenreader.appspot.com (old URL)
+gcloud app deploy appengine-proxy/app.yaml --project sfenreader --version proxy-to-cloudrun
 ```
 
 ### Environment variables
