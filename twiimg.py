@@ -16,9 +16,10 @@
 # limitations under the License.
 #
 
-import urllib
+import urllib.parse
 import logging
 import re
+from html import escape
 from time import time
 from flask import request, make_response
 
@@ -28,9 +29,9 @@ class TwiimgHandler():
     EDITING_STRING_EN = u'Edit another dialog from this dialog'
     EDITING_STRING_JA = u'この局面を引き継いで別の局面を作る'
     def get(self):
-        url = request.url
-        m = re.search(r'(.+)\/(.+)', url)
-        path = m.group(1)
+        ### クエリ文字列を含まない URL からディレクトリ部分を取り出す
+        ### (request.url はクエリ内の %2F もデコードされるため使わない)
+        path = request.base_url.rsplit('/', 1)[0]
         
         sfen_raw = request.args.get('sfen', default='')
         sfen = urllib.parse.unquote(sfen_raw)
@@ -42,7 +43,7 @@ class TwiimgHandler():
 
         black_name = urllib.parse.unquote(request.args.get('sname', default=''))
         white_name =  urllib.parse.unquote(request.args.get('gname', default=''))
-        title = request.args.get('title')
+        title = request.args.get('title', default='')
 
         height = 421
         # If board has no name, the image height is smaller.
@@ -50,6 +51,14 @@ class TwiimgHandler():
             height = 400
 
         query = self.create_sfen_query(sfen_raw, black_name, white_name, title)
+
+        ### HTML に埋め込む値はエスケープする
+        title = escape(title)
+        black_name = escape(black_name)
+        white_name = escape(white_name)
+        sfenurl = escape(sfenurl)
+        resizeurl = escape(resizeurl)
+        query = escape(query)
 
         output = f'''<!DOCTYPE html>
 <html>
@@ -93,7 +102,7 @@ class TwiimgHandler():
             query += "gname=" + white_name + "&"
         if title != "":
             query += "title=" + title + "&"
-        if query[-1] == "&":
+        if query != "" and query[-1] == "&":
             query = "?" + query[:-1]
         return query
 

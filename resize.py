@@ -16,14 +16,13 @@
 # limitations under the License.
 #
 
-import urllib
 import logging
-import re
 import io
-import sys
 
 from PIL import Image
-from flask import request, make_response
+from flask import make_response
+
+from sfen import sfen_handler
 
 # class ResizeHandler(webapp.RequestHandler):
 class ResizeHandler():
@@ -32,7 +31,6 @@ class ResizeHandler():
     logger = ""
     def __init__(self):
         self.logger = logging.getLogger('werkzeug')
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
     def get(self):
         ### height:421px width:400px
@@ -46,10 +44,14 @@ class ResizeHandler():
         img = Image.new('RGBA', (self.WIDTH, self.HEIGHT), color=0xFFFFFFFF)
         ### Make white background image (800x421 px)
         
-        self.logger.warn(f" url_root:{request.url_root} query_string:{request.query_string}")
-        url = request.url_root + u'/sfen?' + request.query_string.decode('unicode-escape')
+        ### 以前は自分自身の /sfen へ HTTP リクエストしていたが、
+        ### 同一リクエスト内で直接 sfen_handler を呼んで画像を得る
+        sfen_response = sfen_handler()
+        if sfen_response.mimetype != 'image/png':
+            ### エラーメッセージはそのまま返す
+            return sfen_response
 
-        diagram_img = Image.open(io.BytesIO(urllib.request.urlopen(url).read()))
+        diagram_img = Image.open(io.BytesIO(sfen_response.get_data()))
         x = (self.WIDTH - diagram_img.width) // 2
         img.paste(diagram_img, (x, 0))
 

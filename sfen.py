@@ -20,12 +20,15 @@ from PIL import Image
 from flask import request, make_response
 import io
 
-import urllib
+import urllib.parse
 import logging
 import os
 import re
 import math
 import sys
+from functools import lru_cache
+
+from PIL import ImageDraw, ImageFont
 
 class BadSfenStringException(Exception):
     def __init__(self, value):
@@ -38,6 +41,49 @@ class PieceKindException(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value)
+
+### 文字列描画用フォント
+### 環境変数 SFEN_FONT_PATH で指定可能。未指定なら fonts/ 以下、
+### 次にシステムの Noto CJK / IPA フォントを探す
+FONT_CANDIDATES = [
+    os.environ.get('SFEN_FONT_PATH', ''),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts', 'font.ttf'),
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fonts', 'font.otf'),
+    '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
+    '/usr/share/fonts/opentype/noto/NotoSansCJKjp-Regular.otf',
+    '/usr/share/fonts/truetype/fonts-japanese-gothic.ttf',
+    '/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf',
+]
+### NotoSansCJK-Regular.ttc 内の日本語フェイスの番号
+NOTO_CJK_JP_INDEX = 0
+MAX_FONT_SIZE = 64
+STRING_PADDING = 2
+
+@lru_cache(maxsize=None)
+def get_font(font_size):
+    for path in FONT_CANDIDATES:
+        if path and os.path.exists(path):
+            index = NOTO_CJK_JP_INDEX if path.endswith('.ttc') else 0
+            return ImageFont.truetype(path, font_size, index=index)
+    raise IOError('No Japanese font found. Set SFEN_FONT_PATH.')
+
+@lru_cache(maxsize=1024)
+def render_string_img(string, font_size):
+    '''
+    Render black text on transparent background.
+    透明背景に黒文字で文字列を描画する
+    '''
+    font_size = max(1, min(font_size, MAX_FONT_SIZE))
+    font = get_font(font_size)
+    (left, _, right, _) = font.getbbox(string)
+    (ascent, descent) = font.getmetrics()
+    width = max(1, right - min(left, 0) + STRING_PADDING * 2)
+    height = ascent + descent + STRING_PADDING * 2
+    img = Image.new('RGBA', (width, height), (255, 255, 255, 0))
+    draw = ImageDraw.Draw(img)
+    draw.text((STRING_PADDING - min(left, 0), STRING_PADDING), string,
+              font=font, fill=(0, 0, 0, 255))
+    return img
 
 # class SfenHandler(webapp.RequestHandler):
 class SfenHandler():
@@ -54,8 +100,6 @@ class SfenHandler():
     black_img = ()
     white_img = ()
     last_move_img = ''
-    string_img = {}
-    string_img_obj = {}
 
     exist_title_flag = False
     max_title_height = 0
@@ -116,7 +160,6 @@ class SfenHandler():
     def __init__(self):
         # self.logger = logging.getLogger('flask.app')
         self.logger = logging.getLogger('werkzeug')
-        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
     def img_init(self, piece_kind = 'kanji'):
@@ -290,34 +333,20 @@ class SfenHandler():
 
     def get_string_img(self, string, font_size = 16):
         '''
-        Get String Image by Google Charts API.
-        Google Charts API can convert Japanese characters to an image.
-        This function maybe raise urllib.urlopen()'s exception.
+        Render a string (including Japanese characters) to an image
+        with a local font.
+        (Google Charts Image API, used formerly, has been shut down.)
         If string is empty, the return value is (None, None).
 
-        日本語を含む文字列を画像にしてGoogle Charts APIから取ってくる
-        urllib.urlopen() が投げる例外を送出する可能性がある
+        日本語を含む文字列をローカルフォントで画像にする
+        (以前使っていた Google Charts Image API は提供終了したため)
         空の文字列が渡されたら(None, None)が帰ります
-
         '''
         if string == '' or string is None:
-             return (None, None)
+            return (None, None)
 
-        if self.string_img.get(string) == None:
-            url = 'http://chart.apis.google.com/chart?chst=d_text_outline'\
-                  '&chld=000000|' + str(font_size) + '|l|000000|_|'
-            url += urllib.parse.quote(string)
-
-            self.logger.info(string + ' -> URL:' + url)
-            img = urllib.request.urlopen(url).read()
-            # img_obj = Image(img) ### for width,height
-            img_obj = Image.open(io.BytesIO(img))
-
-            self.string_img_obj[string] = img_obj
-            self.logger.warn(f" img_obj: format:{img_obj.format} mode:{img_obj.format} width:{img_obj.width} height:{img_obj.height}")
-            self.string_img[string] = img_obj.resize((img_obj.width, img_obj.height))
-
-        return (self.string_img[string], self.string_img_obj[string])
+        img_obj = render_string_img(string, font_size)
+        return (img_obj, img_obj)
 
     def draw_turn_mark(self, img_list, x, y):
         self.last_move_img_init()
@@ -413,7 +442,7 @@ class SfenHandler():
         if len(sfen_tokens) >= 3 and inhand != '-':
             hands = list(inhand)
             hand_num = 0
-            self.logger.warn('hand:{}'.format(hands))
+            self.logger.debug('hand:{}'.format(hands))
             for a_hand in hands:
                 if a_hand.isdigit():
                     if hand_num != 0: ### 2ケタの場合
@@ -424,7 +453,7 @@ class SfenHandler():
                     if hand_num == 0:
                         hand_num = 1
 
-                    self.logger.warn('black_hand:[' + str(a_hand) + '] = ' + str(hand_num))
+                    self.logger.debug('black_hand:[' + str(a_hand) + '] = ' + str(hand_num))
                     a_hand = a_hand.lower() ### For sort after
                     black_hand[a_hand] = hand_num
 
@@ -432,7 +461,7 @@ class SfenHandler():
                 elif a_hand.islower():
                     if hand_num == 0:
                         hand_num = 1
-                    self.logger.warn('white_hand:[' + str(a_hand) + '] = ' + str(hand_num))
+                    self.logger.debug('white_hand:[' + str(a_hand) + '] = ' + str(hand_num))
                     white_hand[a_hand] = hand_num
                     hand_num = 0
 
@@ -452,7 +481,7 @@ class SfenHandler():
             img_list.append((self.draw_piece_img[hand_tuple[0]][turn],
                              x, y, 1.0))
 
-            self.logger.warn('Drawing HandPiece:|{}| num:{} x:{} y:{} turn:{}'.format(hand_tuple[0], hand_tuple[1], x, y, turn))
+            self.logger.debug('Drawing HandPiece:|{}| num:{} x:{} y:{} turn:{}'.format(hand_tuple[0], hand_tuple[1], x, y, turn))
 
             ### 持ち駒が複数ある時は数字の描画をする
             if hand_tuple[1] > 1:
@@ -470,7 +499,7 @@ class SfenHandler():
                     if not hand_str in self.number_img:
                         self.number_img_init(hand_str)
 
-                    self.logger.warn('Drawing HandPiece\'s number|{}| x:{} y:{}'.format(hand_str, two_digit_x, y))
+                    self.logger.debug('Drawing HandPiece\'s number|{}| x:{} y:{}'.format(hand_str, two_digit_x, y))
                     img_list.append((self.number_img[hand_str][turn],
                                      two_digit_x , y, 1.0))
                     num %= 10 ### 1ケタ目にする
@@ -479,7 +508,7 @@ class SfenHandler():
                 if not hand_str in self.number_img:
                     self.number_img_init(hand_str)
 
-                self.logger.warn('Drawing HandPiece\'s num:{} x:{} y:{}'.format(hand_str, one_digit_x, y))
+                self.logger.debug('Drawing HandPiece\'s num:{} x:{} y:{}'.format(hand_str, one_digit_x, y))
                 img_list.append((self.number_img[hand_str][turn],
                                  one_digit_x, y, 1.0))
 
@@ -545,7 +574,7 @@ class SfenHandler():
         
         img = Image.new('RGBA', (self.IMAGE_WIDTH, self.IMAGE_HEIGHT + self.max_title_height), color=0xFFFFFFFF)
         for im in img_list:
-            self.logger.warn(f" composite: x:{im[1]} y:{im[2]}")
+            self.logger.debug(f" composite: x:{im[1]} y:{im[2]}")
             if im[0].mode == "RGBA":
                 img.paste(im[0], (im[1], im[2]), mask=im[0])
             else:
@@ -743,7 +772,7 @@ class SfenHandler():
             ### 駒を書く場所を決める
             x = self.BOARD_X + self.SQUARE_ORIGIN_X + self.SQUARE_MULTIPLE_X * (9 - int(col))
             y = self.BOARD_Y + self.SQUARE_ORIGIN_Y + self.title_height + self.SQUARE_MULTIPLE_Y * (int(row) - 1)
-            self.logger.warn("x:" + str(x) + " y:" + str(y) +
+            self.logger.debug("x:" + str(x) + " y:" + str(y) +
                          " pos:" + pos + " piece:" + piece_lower +
                          " turn:" + str(turn))
             img_list.append((self.draw_piece_img[piece_lower][turn],

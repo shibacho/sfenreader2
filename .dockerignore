@@ -1,0 +1,12 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+app.yaml*
+81dojo_contact.png
+gemini.plan.log
+Dockerfile

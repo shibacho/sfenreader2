@@ -408,8 +408,8 @@ function UpdateUrl() {
     }
     query += '&piece=' + $('input[name=piece]:checked').val() ;
     
-    URL = "http://" + location.host + "/sfen?" + query;
-    TWITTER_URL = "http://" + location.host + "/twiimg?" + query; 
+    URL = location.protocol + "//" + location.host + "/sfen?" + query;
+    TWITTER_URL = location.protocol + "//" + location.host + "/twiimg?" + query; 
 }
 
 var SFEN_IMAGE = undefined;

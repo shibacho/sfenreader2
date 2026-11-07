@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-var PATH = 'http://' + location.host + Pathname(location.pathname) + '/';
+var PATH = location.protocol + '//' + location.host + Pathname(location.pathname) + '/';
 var IMAGEPATH = PATH + '../static_img/';
 
 function Pathname(path) {

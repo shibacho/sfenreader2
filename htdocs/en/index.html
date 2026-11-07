@@ -5,7 +5,7 @@
 <meta content=" is the web service that you can crate a shogi diagram image on the web." name="description" />
 <meta content="Shogi, Diagram, image, blog, paste" name="keywords"/>
 <title>Cloud Shogi Diagram Generator</title>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script type="text/javascript" src="../bod2sfen.js"></script>
 <script type="text/javascript" src="../google_analytics.js" async></script>
 <script type="text/javascript" src="https://apis.google.com/js/plusone.js">
@@ -14,7 +14,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $('#langselect').change(function(){
-    location.href = 'http://' + location.host + '/' + $('#langselect').val() + '/index.html';
+    location.href = location.protocol + '//' + location.host + '/' + $('#langselect').val() + '/index.html';
 });
 });
 </script>
@@ -26,13 +26,13 @@ $(document).ready(function() {
 </div>
 <div style="float:right;">
 <!-- Twitter share button -->
-<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-lang="ja">ツイート</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+<a href="http://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-lang="ja">ツイート</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
 <!-- hatena bookmark button -->
 <a class="twitter-follow-button" data-show-count="false" href="https://twitter.com/sfenreader_gae">Follow @sfenreader_gae</a>
 <!-- Twitter follow button -->
-<a href="http://b.hatena.ne.jp/entry/http://sfenreader.appspot.com/" class="hatena-bookmark-button" data-hatena-bookmark-title="クラウド将棋盤ジェネレーター" data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加"><img src="http://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="http://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
+<a href="http://b.hatena.ne.jp/entry/http://sfenreader.appspot.com/" class="hatena-bookmark-button" data-hatena-bookmark-title="クラウド将棋盤ジェネレーター" data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
 <!-- facebook button -->
-<div id="fb-root"></div><script src="http://connect.facebook.net/ja_JP/all.js#xfbml=1"></script><fb:like href="http://sfenreader.appspot.com/" send="false" layout="button_count" width="50" show_faces="false" font="arial"></fb:like>
+<div id="fb-root"></div><script src="https://connect.facebook.net/ja_JP/all.js#xfbml=1"></script><fb:like href="http://sfenreader.appspot.com/" send="false" layout="button_count" width="50" show_faces="false" font="arial"></fb:like>
 <!-- Google Plus one Button -->
 <g:plusone size="medium"></g:plusone>
 Language:<select id="langselect"><option value="ja">日本語</option><option value="en" selected>English</option></select>
@@ -161,7 +161,7 @@ arrowは矢印の描画を行います。矢印の開始位置と終了位置を
 <img src="about:_blank" id="initial_board_img"><span id="initial_board_img_url" style="display:none;">../sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL</span>
 <h4>img tag</h4>
 <textarea style="width:500px;height:100px;">
-&lt;img src="http://sfenreader.appspot.com/sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL"&gt;
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL"&gt;
 </textarea>
 <!--
 <hr>
@@ -169,7 +169,7 @@ arrowは矢印の描画を行います。矢印の開始位置と終了位置を
 <img src="about:_blank" id="initial_board_img"><span id="initial_board_img_url" style="display:none;">../sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL&piece=international</span>
 <h4>img tag</h4>
 <textarea style="width:500px;height:100px;">
-&lt;img src="http://sfenreader.appspot.com/sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL&amp;piece=international"&gt;
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL&amp;piece=international"&gt;
 </textarea>
 -->
 <hr>
@@ -177,14 +177,14 @@ arrowは矢印の描画を行います。矢印の開始位置と終了位置を
 <img id="endgame_board_img" src="about:_blank"><br><span id="endgame_board_img_url" class="none">../sfen?sfen=ln1g5%2F1r2S1k2%2Fp2pppn2%2F2ps2p2%2F1p7%2F2P6%2FPPSPPPPLP%2F2G2K1pr%2FLN4G1b%20w%20BGSLPnp%2061&lm=52&sname=Yoshiharu%20Habu&gname=Hifumi%20Katou&title=The%2038th%20NHK%20Cup%20tournament&piece=international</span>
 <h4>img tag</h4>
 <textarea style="width:600px;height:150px;">
-&lt;img src="http://sfenreader.appspot.com/sfen?sfen=ln1g5%2F1r2S1k2%2Fp2pppn2%2F2ps2p2%2F1p7%2F2P6%2FPPSPPPPLP%2F2G2K1pr%2FLN4G1b%20w%20BGSLPnp%2061&lm=52&Yoshiharu%20Habu&gname=Hifumi%20Katou&title=The%2038th%20NHK%20Cup%20tournament&amp;international"&gt;
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=ln1g5%2F1r2S1k2%2Fp2pppn2%2F2ps2p2%2F1p7%2F2P6%2FPPSPPPPLP%2F2G2K1pr%2FLN4G1b%20w%20BGSLPnp%2061&lm=52&Yoshiharu%20Habu&gname=Hifumi%20Katou&title=The%2038th%20NHK%20Cup%20tournament&amp;international"&gt;
 </textarea>
 <hr>
 <h3>Mate Problems(Shogi Zukou No.1)</h3>
 <img id="tsume_board_img" src="about:_blank"><span id="tsume_board_img_url" class="none">../sfen?sfen=1pG1B4%2FGs%2BP6%2FpP7%2Fn1ls5%2F3k5%2FnL4%2Br1b%2F1%2Bp1p%2BR4%2F1S7%2F2N6%20b%20SPgnl11p</span><br>
 <h4>img tag</h4>
 <textarea style="width:500px;height:100px;">
-&lt;img src="http://sfenreader.appspot.com/sfen?sfen=1pG1B4%2FGs%2BP6%2FpP7%2Fn1ls5%2F3k5%2FnL4%2Br1b%2F1%2Bp1p%2BR4%2F1S7%2F2N6%20b%20SPgnl11p%20"&gt;
+&lt;img src="https://sfenreader.appspot.com/sfen?sfen=1pG1B4%2FGs%2BP6%2FpP7%2Fn1ls5%2F3k5%2FnL4%2Br1b%2F1%2Bp1p%2BR4%2F1S7%2F2N6%20b%20SPgnl11p%20"&gt;
 </textarea>
 <br>
 <button id="example_button_under">▲Hide Examples</button>
@@ -214,7 +214,7 @@ If you think this program generates wrong shogi diagrams, please mention to <a h
 <li> 2011/09/04 English page is published.
 </ul>
 <hr>
-<img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
+<img src="https://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" />
 </div> <!-- description -->
 </body>
 </html>

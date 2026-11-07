@@ -15,8 +15,12 @@
 # limitations under the License.
 
 # [START sfenreader2]
+import logging
+import os
+import sys
+
 from flask import Flask, send_from_directory
-from flask import Response
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from sfen import sfen_handler
 from twiimg import twiimg_handler
@@ -24,7 +28,13 @@ from resize import resize_handler
 
 # If `entrypoint` is not defined in app.yaml, App Engine will look for an app
 # called `app` in `main.py`.
+logging.basicConfig(stream=sys.stdout,
+                    level=os.environ.get('LOG_LEVEL', 'INFO').upper())
+
 app = Flask(__name__, static_folder="htdocs", static_url_path="")
+# Cloud Run はHTTPSを終端するプロキシの後ろで動くので、
+# X-Forwarded-Proto / Host を信頼して request.url を https にする
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 app.add_url_rule('/sfen', 'sfen', sfen_handler)
 app.add_url_rule('/resize', 'resize', resize_handler)
@@ -60,5 +70,5 @@ if __name__ == '__main__':
     # Engine, a webserver process such as Gunicorn will serve the app. This
     # can be configured by adding an `entrypoint` to app.yaml.
     print(f"app.url_map:{app.url_map}")
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='127.0.0.1', port=int(os.environ.get('PORT', 8080)), debug=True)
 # [END gae_python37_app]

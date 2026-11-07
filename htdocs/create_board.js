@@ -207,8 +207,8 @@ $(document).ready(function(){
   board_canvas.onBoardChange = function() {
     var query = getCurrentQueryString();
 
-    var url = 'http://' + location.host + '/sfen?' + query;
-    var twiimg_url = 'http://' + location.host + '/twiimg?' + query;
+    var url = location.protocol + '//' + location.host + '/sfen?' + query;
+    var twiimg_url = location.protocol + '//' + location.host + '/twiimg?' + query;
 
     var img_url = 'img src="' + url + '"';
 
@@ -235,7 +235,7 @@ $(document).ready(function(){
 
   $('#langselect').change(function(evt) {
     var query = getCurrentQueryString(this);
-    location.href = 'http://' + location.host + '/' + 
+    location.href = location.protocol + '//' + location.host + '/' + 
         $('#langselect').val() + '/create_board.html?' + query;
   });
 
