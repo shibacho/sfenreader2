@@ -32,11 +32,12 @@ if (user_agent.indexOf('iphone') > -1 || user_agent.indexOf('android') > -1) {
   return t;
 }(document, "script", "twitter-wjs"));</script>
 <script type="text/javascript" src="../jshogi_board.js?2015080201"></script>
-<script type="text/javascript" src="../create_board.js?2026110701"></script>
+<script type="text/javascript" src="../create_board.js?2026111401"></script>
 <script type="text/javascript" src="../google_analytics.js" async></script>
-<link rel="stylesheet" type="text/css" href="../common.css" />
+<link rel="stylesheet" type="text/css" href="../common.css?2026111401" />
 </head>
 <body>
+<div id="copy_sfen_toast" class="toast" role="status" aria-live="polite"></div>
 <div id="container" class="container">
 <h1>局面図をWebで作成</h1>
 <div class="right">
@@ -73,7 +74,7 @@ URL&nbsp;:<input type="text" id="long_url" style="width:320px;" onclick="this.fo
 <!--
 短縮URL:<input type="text" id="short_url" /><br>
 -->
-SFEN:<input type="text" id="sfen" name="sfen" style="width:400px;" onclick="this.focus(); this.select();"/> <br>
+SFEN:<input type="text" id="sfen" name="sfen" style="width:360px;" onclick="this.focus(); this.select();"/> <button type="button" id="copy_sfen" class="icon-button" title="SFENをクリップボードにコピー" aria-label="SFENをクリップボードにコピー"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg></button> <span id="copy_sfen_done_string" class="none">クリップボードにコピーしました</span><br>
 <div style="float:right;"><a href="http://kyokumen.jp/positions/search">局面ペディア検索</a>等に使えます</div>
 </form>
 </div> <!-- left_canvas -->

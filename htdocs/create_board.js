@@ -356,6 +356,38 @@ $(document).ready(function(){
     }
   });
 
+  // SFEN 文字列をクリップボードにコピーする
+  var copy_sfen_timer = null;
+  $('#copy_sfen').click(function(evt) {
+    var text = $('#sfen').val();
+    var showDone = function() {
+      // 画面上部にメッセージを表示する (レイアウトを動かさないよう固定配置)
+      $('#copy_sfen_toast').text($('#copy_sfen_done_string').text()).addClass('show');
+      clearTimeout(copy_sfen_timer);
+      copy_sfen_timer = setTimeout(function() {
+        $('#copy_sfen_toast').removeClass('show');
+      }, 2000);
+    };
+    // 非対応ブラウザや非 HTTPS 環境では選択してコピーする方式にフォールバック
+    var fallbackCopy = function() {
+      var input = document.getElementById('sfen');
+      input.focus();
+      input.select();
+      try {
+        if (document.execCommand('copy')) {
+          showDone();
+        }
+      } catch (e) {
+        // コピーできない場合は選択状態のまま残し、手動でコピーしてもらう
+      }
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(showDone, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  });
+
   var flip_alphabet = function(str) {
     var flipped = "";
     for (var i = 0, n = str.length; i < n; i++) {
